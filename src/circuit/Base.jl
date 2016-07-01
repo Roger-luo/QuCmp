@@ -1,11 +1,19 @@
+import Base: show
+
 abstract AbstractModels
 abstract QuCircuit<:AbstractModels
 abstract AbstractOp{T,N}
 
-type Gate{T,N}
-    name::AbstractString
-    op::AbstractOp{T,N}
+type QuState
+    s::Vector
 end
+
+function show(io::IO,s::QuState)
+end
+
+##################################
+#  Matrix Operators
+##################################
 
 type MatrixOp{N}<:AbstractOp{AbstractMatrix,N}
     name::AbstractString
@@ -13,7 +21,12 @@ type MatrixOp{N}<:AbstractOp{AbstractMatrix,N}
 end
 
 MatrixOp(num::Integer,name::AbstractString,mat::AbstractMatrix) =
-    BaseMatrixOp{num}(name,mat)
+    MatrixOp{num}(name,mat)
+
+function show{N}(io::IO,matop::MatrixOp{N})
+    println("$N bits matrix operator $(matop.name):")
+    show(matop.mat)
+end
 
 
 OP_Hadamard = MatrixOp(2,"Hadamard",hadamard)
@@ -31,13 +44,20 @@ end
 
 OP_I = IdentityOp(1)
 
-#
+##################################
+# Function Operators
+##################################
 
-# TODO
-# function show(io::IO,matop::BaseMatrixOp)
-# end
+type FunctionOp{N}<:AbstractOp{Function,N}
+    name::AbstractString
+    f::Function
+end
 
 
+type Gate{T,N}
+    name::AbstractString
+    op::AbstractOp{T,N}
+end
 
 """
 GateUnit
