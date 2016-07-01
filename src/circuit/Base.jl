@@ -7,15 +7,31 @@ type Gate{T,N}
     op::AbstractOp{T,N}
 end
 
-type BaseMatrixOp{N}<:AbstractOp{AbstractMatrix,N}
+type MatrixOp{N}<:AbstractOp{AbstractMatrix,N}
     name::AbstractString
     mat::AbstractMatrix
 end
 
-BaseMatrixOp(num::Integer,name::AbstractString,mat::AbstractMatrix) =
+MatrixOp(num::Integer,name::AbstractString,mat::AbstractMatrix) =
     BaseMatrixOp{num}(name,mat)
 
-OP_Hadamard = BaseMatrixOp{2}("Hadamard",hadamard)
+
+OP_Hadamard = MatrixOp(2,"Hadamard",hadamard)
+# Pauli Groups
+OP_sigmax   = MatrixOp(2,"Pauli Sigma X",σ₁)
+OP_sigmay   = MatrixOp(2,"Pauli Sigma Y",σ₂)
+OP_sigmaz   = MatrixOP(2,"Pauli Sigma Z",σ₃)
+
+# TODO
+# this comes from linalg/uniformscaling.jl
+# same operators should be overloaded
+immutable IdentityOp{T<:Number}<:AbstractOp{T,N}
+    λ::T
+end
+
+OP_I = IdentityOp(1)
+
+#
 
 # TODO
 # function show(io::IO,matop::BaseMatrixOp)
