@@ -4,12 +4,11 @@ abstract AbstractModels
 abstract QuCircuit<:AbstractModels
 abstract AbstractOp{T,N}
 
-type QuState
-    s::Vector
+type QuState{N}
+    s::AbstractVector
 end
 
-function show(io::IO,s::QuState)
-end
+# TODO show(io::IO,state::QuState)
 
 ##################################
 #  Matrix Operators
