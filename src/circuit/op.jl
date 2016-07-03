@@ -12,7 +12,7 @@ end
 MatrixOp(num::Integer,name::AbstractString,mat::AbstractMatrix) = MatrixOp{num}(name,mat)
 
 function call{N}(matop::MatrixOp{N})
-    return [matop.mat[:,i] for i=1:size(A,2)]
+    return [matop.mat[:,i] for i=1:size(matop.mat,2)]
 end
 
 function call{N}(matop::MatrixOp{N},state::AbstractVector)
@@ -47,7 +47,7 @@ OP_I = IdentityOp(1)
 const FUNCTION_OP_PARA_INF = -1
 
 """
-Function operators should be able to accept AbstractVector inputs
+Function operators should be able to accept AbstractSparseVector inputs
 
 The member `f` should be an one input only function
 """

@@ -3,9 +3,10 @@ module QuCmp
 abstract QuComput
 
 include("const.jl")
-include("utils/LogicExpr.jl")
-include("utils/math.jl")
-include("Adiabatic/Adiabatic.jl")
+# include("utils/LogicExpr.jl")
+# include("utils/math.jl")
+# include("Adiabatic/Adiabatic.jl")
 
+include("circuit/Circuit.jl")
 
 end # module
