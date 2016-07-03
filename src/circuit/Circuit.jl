@@ -1,10 +1,11 @@
 using Expokit
-import Base: show
-
-include("../const.jl")
+import Base.show
+export Gate,Hadamard,X,Y,Z,Circuit,addgate!
 
 abstract AbstractModels
 abstract QuCircuit<:AbstractModels
+
+# TODO: QuIDD
 
 type QuState{N}
     s::AbstractVector
@@ -31,6 +32,9 @@ X        = Gate("Paili X",OP_sigmax)
 Y        = Gate("Paili Y",OP_sigmay)
 Z        = Gate("Paili Z",OP_sigmaz)
 
+function call{T,N}(gate::Gate{T,N})
+    return gate.op()
+end
 
 """
 GateUnit
@@ -70,6 +74,8 @@ GateUnit{T,N}(gate::Gate{T,N},pos::Vector{Int}) = GateUnit{T,N}(gate,pos)
 GateUnit{T,N}(gate::Gate{T,N},pos::Tuple{Int}) = GateUnit{T,N}(gate,collect(pos))
 GateUnit{T,N}(gate::Gate{T,N},pos::Int...) = GateUnit{T,N}(gate,collect(pos))
 
+bitnum{T,N}(unit::GateUnit{T,N}) = N
+
 ############################
 # Circuits
 ############################
@@ -82,11 +88,16 @@ Circuit(num::Integer,gates::Array{GateUnit,1}) = Circuit{num}(gates)
 Circuit(num::Integer)=Circuit{num}(Array(GateUnit,0))
 
 ############################
-# constructor
+# Constructor
 ############################
+
+max(a::Int) = a
+
 function addgate!{T,N,M}(circuit::Circuit{N},gate::Gate{T,M},pos::Int...)
     # Bounds check
-    @assert length(pos)==M "number of qubits involved do not match"
+    @assert length(pos)==M+1 "number of qubits involved do not match"
+    @assert max(pos[2:end]...)<=N
 
     push!(circuit.gates,GateUnit(gate,pos...))
+    sort!(circuit.gates,alg=QuickSort,by=x->x.pos[1])
 end
