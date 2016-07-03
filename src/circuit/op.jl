@@ -1,14 +1,7 @@
+using Expokit
 import Base: show
 
-abstract AbstractModels
-abstract QuCircuit<:AbstractModels
 abstract AbstractOp{T,N}
-
-type QuState{N}
-    s::AbstractVector
-end
-
-# TODO show(io::IO,state::QuState)
 
 ##################################
 #  Matrix Operators
@@ -37,7 +30,7 @@ OP_sigmaz   = MatrixOP(2,"Pauli Sigma Z",σ₃)
 # TODO
 # this comes from linalg/uniformscaling.jl
 # same operators should be overloaded
-immutable IdentityOp{T<:Number}<:AbstractOp{T,N}
+immutable IdentityOp{T<:Number}<:AbstractOp{T}
     λ::T
 end
 
@@ -47,46 +40,13 @@ OP_I = IdentityOp(1)
 # Function Operators
 ##################################
 
+const FUNCTION_OP_PARA_INF -1
+
 type FunctionOp{N}<:AbstractOp{Function,N}
     name::AbstractString
     f::Function
 end
 
-
-type Gate{T,N}
-    name::AbstractString
-    op::AbstractOp{T,N}
-end
-
-"""
-GateUnit
----
-
-GateUnit is for the gate unit in a circuit
-
-pos:
-the first number in pos is the the column number
-the second number in pos is the bits' IDs that is realted to this gate
-eg.
---block 1--|----block 2----|
-1 -----------|---------------|
-2 --[A]------|---------------|
-3 -----------|---------------|
-4 -----------|---[   ]-------|
-5 -----------|---[ B ]-------|
-6 -----------|---[   ]-------|
-
-The position of gate B is (2,4,5,6)
-"""
-abstract AbstractGateUnit
-
-type GateUnit{T,N}<:AbstractGateUnit
-    pos::Vector{Int}
-    gate::Gate{T,N}
-    # TODO : time layer?
-    # time_layer::Real
-end
-
-type Circuit{N} <: QuCircuit
-    gates::GateUnit{T,N}
+function TimeOp{N}(state::QuState{N};Hamiltonian=I,dt=1e-6)
+    return expmv(-im*dt,Hamiltonian,state.s)
 end
