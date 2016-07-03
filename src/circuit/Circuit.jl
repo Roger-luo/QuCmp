@@ -1,9 +1,10 @@
 using Expokit
 import Base: show
 
+include("../const.jl")
+
 abstract AbstractModels
 abstract QuCircuit<:AbstractModels
-abstract AbstractOp{T,N}
 
 type QuState{N}
     s::AbstractVector
@@ -11,60 +12,19 @@ end
 
 # TODO show(io::IO,state::QuState)
 
-##################################
-#  Matrix Operators
-##################################
+include("op.jl")
 
-type MatrixOp{N}<:AbstractOp{AbstractMatrix,N}
-    name::AbstractString
-    mat::AbstractMatrix
-end
-
-MatrixOp(num::Integer,name::AbstractString,mat::AbstractMatrix) =
-    MatrixOp{num}(name,mat)
-
-function show{N}(io::IO,matop::MatrixOp{N})
-    println("$N bits matrix operator $(matop.name):")
-    show(matop.mat)
-end
-
-
-OP_Hadamard = MatrixOp(2,"Hadamard",hadamard)
-# Pauli Groups
-OP_sigmax   = MatrixOp(2,"Pauli Sigma X",σ₁)
-OP_sigmay   = MatrixOp(2,"Pauli Sigma Y",σ₂)
-OP_sigmaz   = MatrixOP(2,"Pauli Sigma Z",σ₃)
-
-# TODO
-# this comes from linalg/uniformscaling.jl
-# same operators should be overloaded
-immutable IdentityOp{T<:Number}<:AbstractOp{T}
-    λ::T
-end
-
-OP_I = IdentityOp(1)
-
-##################################
-# Function Operators
-##################################
-
-const FUNCTION_OP_PARA_INF -1
-
-type FunctionOp{N}<:AbstractOp{Function,N}
-    name::AbstractString
-    f::Function
-end
-
-function TimeOp{N}(state::QuState{N};Hamiltonian=I,dt=1e-6)
-    return expmv(-im*dt,Hamiltonian,state.s)
-end
+##########################
+# Gates
+##########################
 
 type Gate{T,N}
     name::AbstractString
     op::AbstractOp{T,N}
+    Gate{T,N}(name::AbstractString,op::AbstractOp{T,N}) = new(name,op)
 end
 
-Gate{T,N}(name::AbstractString,op::MatrixOP{N})=Gate{AbstractMatrix,N}(name,op)
+Gate{N}(name::AbstractString,op::MatrixOp{N})=Gate{AbstractMatrix,N}(name,op)
 
 Hadamard = Gate("Hadamard gate",OP_Hadamard)
 X        = Gate("Paili X",OP_sigmax)
@@ -98,14 +58,35 @@ The position of gate B is (2,4,5,6)
 abstract AbstractGateUnit
 
 type GateUnit{T,N}<:AbstractGateUnit
-    pos::Vector{Int}
     gate::Gate{T,N}
+    pos::Vector{Int}
     # TODO : time layer?
     # time_layer::Real
 
-    function GateUnit{T,N}(pos::Vector{Int},gate::Gate{T,N})
+    GateUnit{T,N}(gate::Gate{T,N},pos::Vector{Int})=new(gate,pos)
 end
 
-type Circuit{T,N} <: QuCircuit
-    gates::GateUnit{T,N}
+GateUnit{T,N}(gate::Gate{T,N},pos::Vector{Int}) = GateUnit{T,N}(gate,pos)
+GateUnit{T,N}(gate::Gate{T,N},pos::Tuple{Int}) = GateUnit{T,N}(gate,collect(pos))
+GateUnit{T,N}(gate::Gate{T,N},pos::Int...) = GateUnit{T,N}(gate,collect(pos))
+
+############################
+# Circuits
+############################
+
+type Circuit{N} <: QuCircuit
+    gates::Array{GateUnit,1}
+end
+
+Circuit(num::Integer,gates::Array{GateUnit,1}) = Circuit{num}(gates)
+Circuit(num::Integer)=Circuit{num}(Array(GateUnit,0))
+
+############################
+# constructor
+############################
+function addgate!{T,N,M}(circuit::Circuit{N},gate::Gate{T,M},pos::Int...)
+    # Bounds check
+    @assert length(pos)==M "number of qubits involved do not match"
+
+    push!(circuit.gates,GateUnit(gate,pos...))
 end

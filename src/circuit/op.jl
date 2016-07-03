@@ -1,6 +1,3 @@
-using Expokit
-import Base: show
-
 abstract AbstractOp{T,N}
 
 ##################################
@@ -12,8 +9,7 @@ type MatrixOp{N}<:AbstractOp{AbstractMatrix,N}
     mat::AbstractMatrix
 end
 
-MatrixOp(num::Integer,name::AbstractString,mat::AbstractMatrix) =
-    MatrixOp{num}(name,mat)
+MatrixOp(num::Integer,name::AbstractString,mat::AbstractMatrix) = MatrixOp{num}(name,mat)
 
 function show{N}(io::IO,matop::MatrixOp{N})
     println("$N bits matrix operator $(matop.name):")
@@ -21,11 +17,11 @@ function show{N}(io::IO,matop::MatrixOp{N})
 end
 
 
-OP_Hadamard = MatrixOp(2,"Hadamard",hadamard)
+OP_Hadamard = MatrixOp(1,"Hadamard",hadamard)
 # Pauli Groups
-OP_sigmax   = MatrixOp(2,"Pauli Sigma X",σ₁)
-OP_sigmay   = MatrixOp(2,"Pauli Sigma Y",σ₂)
-OP_sigmaz   = MatrixOP(2,"Pauli Sigma Z",σ₃)
+OP_sigmax   = MatrixOp(1,"Pauli Sigma X",σ₁)
+OP_sigmay   = MatrixOp(1,"Pauli Sigma Y",σ₂)
+OP_sigmaz   = MatrixOp(1,"Pauli Sigma Z",σ₃)
 
 # TODO
 # this comes from linalg/uniformscaling.jl
@@ -40,7 +36,7 @@ OP_I = IdentityOp(1)
 # Function Operators
 ##################################
 
-const FUNCTION_OP_PARA_INF -1
+const FUNCTION_OP_PARA_INF = -1
 
 type FunctionOp{N}<:AbstractOp{Function,N}
     name::AbstractString
