@@ -12,4 +12,8 @@ end
 (+)(A::QuState,B::QuState) = A.s+B.s
 (-)(A::Qustate,B::QuState) = A.s-B.s
 (*)(A::QuState,B::QuState) = A.s*B.s
+(/)(A::QuState,B::QuState) = A.s/B/s
+(^)(A::QuState,b::Real) = A.s^b
+
+
 # TODO show(io::IO,state::QuState)

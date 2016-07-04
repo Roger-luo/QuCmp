@@ -57,7 +57,14 @@ end
 function process{N}(unit::CtrlGateUnit{N},input::AbstractSparseArray)
 end
 
-function process{N}()
+function process(unit::HadamardUnit,input::AbstractSparseArray)
+end
+
+function process(unit::CNOTUnit,input::AbstractSparseArray)
+end
+
+function process(unit::PhaseUnit,input::AbstractSparseArray)
+end
 
 function process{N}(circuit::Circuit{N},input::AbstractSparseArray)
     ret = deepcopy(input)
@@ -71,4 +78,4 @@ function process{N}(circuit::Circuit{N},input::AbstractSparseArray)
     return ret
 end
 
-export process!,process
+export process
