@@ -38,21 +38,23 @@ function set(x::Integer,pad::Int,ids::Vector{Int},assign::Integer)
     return ret
 end
 
-function process(unit::AbstractGateUnit,input::AbstractSparseArray)
-    n = bitnum(unit);len = length(unit.pos)-1
+function process{N}(unit::AbstractGateUnit{N},input::AbstractSparseArray)
+    len = length(unit.pos)-1
     eigens = unit.gate()
     ret = spzeros(Complex,size(input)...)
     for i in rowvals(input)
         subidx = bin(i-1,len,unit.pos[2:end])
         rett = spzeros(Complex,size(input)...)
         for j = 0:(2^len-1)
-            idx = set(i-1,n,unit.pos[2:end],j)
+            idx = set(i-1,N,unit.pos[2:end],j)
             rett[idx+1] = input[i]*eigens[subidx+1][j+1]
         end
         ret += rett
     end
     return ret
 end
+
+function process{N}(unit::CtrlGateUnit{N},input::AbstractSparseArray)
 
 function process{N}(circuit::Circuit{N},input::AbstractSparseArray)
     ret = deepcopy(input)

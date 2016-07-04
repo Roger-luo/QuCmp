@@ -46,9 +46,9 @@ eg.
 
 The position of gate B is (2,4,5,6)
 """
-abstract AbstractGateUnit
+abstract AbstractGateUnit{N}
 
-type GateUnit{T,N}<:AbstractGateUnit
+type GateUnit{T,N}<:AbstractGateUnit{N}
     gate::Gate{T,N}
     pos::Vector{Int}
     # TODO : time layer?
@@ -61,7 +61,15 @@ GateUnit{T,N}(gate::Gate{T,N},pos::Vector{Int}) = GateUnit{T,N}(gate,pos)
 GateUnit{T,N}(gate::Gate{T,N},pos::Tuple{Int}) = GateUnit{T,N}(gate,collect(pos))
 GateUnit{T,N}(gate::Gate{T,N},pos::Int...) = GateUnit{T,N}(gate,collect(pos))
 
-bitnum{T,N}(unit::GateUnit{T,N}) = N
+type CtrlGateUnit{T,N}<:AbstractGateUnit{N}
+    gate::Gate{T,N}
+    pos::Vector{Int}
+    ctrl::Vector{Int}
+end
+
+CtrlGateUnit{T,N}(gate::Gate{T,N},pos::Vector{Int},ctrl::Vector{Int}) = CtrlGateUnit{T,N}(gate,pos,ctrl)
+
+bitnum{T,N}(unit::AbstractGateUnit{N}) = N
 
 ############################
 # Circuits
@@ -74,23 +82,28 @@ end
 Circuit(num::Integer,gates::Array{GateUnit,1}) = Circuit{num}(gates)
 Circuit(num::Integer)=Circuit{num}(Array(GateUnit,0))
 
+###########################
+# Stablizer Circuit
+# Circuits with only Hadamard, C-NOT, R (Phase)
+# followed by only one bits measurement
+###########################
 
-type StableCircuit{N} <: QuCircuit{N}
+type stlzCircuit{N} <: QuCircuit{N}
     gates::Array{GateUnit,1}
 end
 
-StableCircuit(num::Integer,gates::Array{GateUnit,1}) = StableCircuit{num}(gates)
-StableCircuit(num::Integer) = StableCircuit{num}(Array(GateUnit,0))
+stlzCircuit(num::Integer,gates::Array{GateUnit,1}) = StableCircuit{num}(gates)
+stlzCircuit(num::Integer) = StableCircuit{num}(Array(GateUnit,0))
 
 ############################
-# Constructor
+# Circuit Constructor
 ############################
 
 max(a::Int) = a
 
 function addgate!{T,N,M}(circuit::QuCircuit{N},gate::Gate{T,M},pos::Int...)
     # Bounds check
-    @assert length(pos)==M+1 "number of qubits involved do not match"
+    @assert length(pos)==M+1 "number of qubits do not match"
     @assert max(pos[2:end]...)<=N
 
     push!(circuit.gates,GateUnit(gate,ntuple(x->sort(collect(pos))[x],length(pos))...))
