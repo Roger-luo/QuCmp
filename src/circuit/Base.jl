@@ -69,6 +69,21 @@ end
 
 CtrlGateUnit{T,N}(gate::Gate{T,N},pos::Vector{Int},ctrl::Vector{Int}) = CtrlGateUnit{T,N}(gate,pos,ctrl)
 
+type HadamardUnit<:AbstractGateUnit{1}
+    gate::AbstractMatrix
+    pos::Int
+end
+
+type CNOTUnit<:AbstractGateUnit{1}
+    pos::Int
+    ctrl::Int
+end
+
+type PhaseUnit<:AbstractGateUnit{1}
+    pos::Int
+    theta::Real
+end
+
 bitnum{T,N}(unit::AbstractGateUnit{N}) = N
 
 ############################

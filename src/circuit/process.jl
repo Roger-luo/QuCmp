@@ -55,6 +55,9 @@ function process{N}(unit::AbstractGateUnit{N},input::AbstractSparseArray)
 end
 
 function process{N}(unit::CtrlGateUnit{N},input::AbstractSparseArray)
+end
+
+function process{N}()
 
 function process{N}(circuit::Circuit{N},input::AbstractSparseArray)
     ret = deepcopy(input)
