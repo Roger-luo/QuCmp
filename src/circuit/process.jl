@@ -38,7 +38,7 @@ function set(x::Integer,pad::Int,ids::Vector{Int},assign::Integer)
     return ret
 end
 
-function process(unit::GateUnit,input::AbstractSparseArray)
+function process(unit::AbstractGateUnit,input::AbstractSparseArray)
     n = bitnum(unit);len = length(unit.pos)-1
     eigens = unit.gate()
     ret = spzeros(Complex,size(input)...)
@@ -55,14 +55,15 @@ function process(unit::GateUnit,input::AbstractSparseArray)
 end
 
 function process{N}(circuit::Circuit{N},input::AbstractSparseArray)
+    ret = deepcopy(input)
     for unit in circuit.gates
         if N==bitnum(unit)
-            input = unit.gate(input)
+            ret = unit.gate(ret)
         else
-            input[:] = process(unit,input)
+            ret = process(unit,ret)
         end
     end
-    return input
+    return ret
 end
 
 export process!,process

@@ -1,5 +1,5 @@
-abstract AbstractModels
-abstract QuCircuit<:AbstractModels
+abstract AbstractModels{N}
+abstract QuCircuit{N}<:AbstractModels{N}
 
 
 ##########################
@@ -67,12 +67,20 @@ bitnum{T,N}(unit::GateUnit{T,N}) = N
 # Circuits
 ############################
 
-type Circuit{N} <: QuCircuit
+type Circuit{N} <: QuCircuit{N}
     gates::Array{GateUnit,1}
 end
 
 Circuit(num::Integer,gates::Array{GateUnit,1}) = Circuit{num}(gates)
 Circuit(num::Integer)=Circuit{num}(Array(GateUnit,0))
+
+
+type StableCircuit{N} <: QuCircuit{N}
+    gates::Array{GateUnit,1}
+end
+
+StableCircuit(num::Integer,gates::Array{GateUnit,1}) = StableCircuit{num}(gates)
+StableCircuit(num::Integer) = StableCircuit{num}(Array(GateUnit,0))
 
 ############################
 # Constructor
@@ -80,7 +88,7 @@ Circuit(num::Integer)=Circuit{num}(Array(GateUnit,0))
 
 max(a::Int) = a
 
-function addgate!{T,N,M}(circuit::Circuit{N},gate::Gate{T,M},pos::Int...)
+function addgate!{T,N,M}(circuit::QuCircuit{N},gate::Gate{T,M},pos::Int...)
     # Bounds check
     @assert length(pos)==M+1 "number of qubits involved do not match"
     @assert max(pos[2:end]...)<=N
