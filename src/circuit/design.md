@@ -14,7 +14,7 @@ for stablizer circuits, `HadamardUnit`,`PhaseUnit`,`CNOTUnit` are implemented in
 ```julia
 function process{N}(unit::CtrlGateUnit{N},input::AbstractSparseArray)
 function process(unit::HadamardUnit,input::AbstractSparseArray)
-...
+# ...
 ```
 
 # QuIDD
