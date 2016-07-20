@@ -1,0 +1,16 @@
+language: julia
+os:
+    - linux
+    - osx
+julia:
+    - release
+    - nightly
+notifications:
+  email: false
+script:
+    - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
+    - julia -e 'Pkg.clone(pwd()); Pkg.build("QuCmp"); Pkg.test("QuCmp")'
+matrix:
+  allow_failures: # import normalize in QuBase as this is in Base in v 0.5.
+    - julia: nightly
+  fast_finish: true
