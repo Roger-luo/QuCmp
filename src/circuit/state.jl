@@ -1,12 +1,17 @@
 # TODO: QuIDD
 
+# NOTE
+# N is the number of bits in a quantum array
+
 abstract AbstractQuArray{N}
 
-type QuIDDArray{N}<:AbstractQuArray{N}
-end
+# TODO
+# QuIDD encoding array
+# type QuIDDArray{T,N}<:AbstractQuArray{N}
+# end
 
-type QuState{N}<:AbstractQuArray{N}
-    s::AbstractVector
+type QuArray{T,N}<:AbstractQuArray{N}
+    s::AbstractVector{T}
 end
 
 (+)(A::QuState,B::QuState) = A.s+B.s
