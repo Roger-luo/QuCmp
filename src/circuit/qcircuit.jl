@@ -60,4 +60,10 @@ function addgate!{T,N,M}(circuit::QuCircuit{N},gate::Gate{T,M},pos::Vector{Int},
     addgate!(circuit,CtrlGateUnit(gate,pos,ctrl))
 end
 
-function rmgate!{T,N,M}(circuit::QuCircuit{N},pos::Vector{Int})
+function removegate!{T,N,M}(circuit::QuCircuit{N},pos::Vector{Int})
+    for i in eachindnex(circuits.gates)
+        if circuits.gates.pos == pos
+            deleteat!(circuits.gates,i)
+        end
+    end
+end
