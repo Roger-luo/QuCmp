@@ -29,10 +29,12 @@ type AdiaComputer <: QuComput
 
     # n is the number of bits
     # maxtime is the max evolution time
-    function AdiaComputer{M,N}(ins::Instance{M,N},n::Int,maxtime::Real;dt=1e-2,nev=6)
+
+    function AdiaComputer{M,N}(pH::AbstractMatrix,n::Int,maxtime::Real;dt=1e-2,nev=6)
+        HP = pH
         HB = bHamilton(n)
-        HP = pHamilton(ins,n)
-        # set time location to be the beginning
+
+        # initialize time location
         location = 0
         # prepare the initial state
         state = convert(Array{Complex,1},[1/sqrt(2^n) for i=1:2^n])
@@ -41,6 +43,7 @@ type AdiaComputer <: QuComput
         eigens = eigs(HB,nev=nev,which=:SM)[1].'
 
         # adjust nev if the number of bits is smaller than 3
+
         if n<3
             nev = 2^n
             warn("adjusting nev to $(nev)\n")
@@ -50,8 +53,12 @@ type AdiaComputer <: QuComput
         prob = norm([x==findmin(diag(HP))[2]?1:0 for x=1:2^n])^2
 
         new(HB,HP,maxtime,n,dt,location,state,eigens,prob,nev)
-    end
+      end
 end
+
+# 3-SAT problem
+
+AdiaComputer{M,N}(ins::Instance{M,N},n::Int,maxtime::Real;dt=1e-2,nev=6) = AdiaComputer{M,N}(pHamilton(ins,n),n,maxtime;dt=dt,nev=nev)
 
 function Hamiltonian(Hs::AdiaComputer)
     return (1-Hs.location)*Hs.HB+Hs.location*Hs.HP
