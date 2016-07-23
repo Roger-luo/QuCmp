@@ -23,8 +23,8 @@ type stlzCircuit{N} <: QuCircuit{N}
     gates::Array{GateUnit,1}
 end
 
-stlzCircuit(num::Integer,gates::Array{GateUnit,1}) = StableCircuit{num}(gates)
-stlzCircuit(num::Integer) = StableCircuit{num}(Array(GateUnit,0))
+stlzCircuit(num::Integer,gates::Array{GateUnit,1}) = stlzCircuit{num}(gates)
+stlzCircuit(num::Integer) = stlzCircuit{num}(Array(GateUnit,0))
 
 ############################
 # Circuit Constructor
@@ -44,16 +44,20 @@ end
 function addgate!{T,N,M}(circuit::QuCircuit{N},gate::Gate{T,M},pos::Vector{Int})
     # Bounds check
     @assert length(pos)==M+1 "number of qubits do not match"
-    @assert max(maximum(pos[2:end]),maximum(ctrl)) <= N "bit's id out of range, maximum is $N"
+    @assert maximum(pos[2:end])<=N "bit's id out of range, maximum is $N"
 
-    addgate!(circuit.gates,GateUnit(gate,sort(pos)))
+    addgate!(circuit,GateUnit(gate,pos))
 end
 
 addgate!{T,N,M}(circuit::QuCircuit{N},gate::Gate{T,M},pos::Int...) = addgate!(circuit,gate,collect(pos))
 
+# for controled gates
 function addgate!{T,N,M}(circuit::QuCircuit{N},gate::Gate{T,M},pos::Vector{Int},ctrl::Vector{Int})
     # Bounds check
     @assert length(pos)+length(ctrl) == M+1
-    @assert max()
+    @assert max(maximum(pos[2:end]),maximum(ctrl)) <= N "bit's id out of range, maximum is $N"
 
-function rmgate!{T,N,M}(circuit::QuCircuit{N},gate::Gate{T,M},pos::Int...)
+    addgate!(circuit,CtrlGateUnit(gate,pos,ctrl))
+end
+
+function rmgate!{T,N,M}(circuit::QuCircuit{N},pos::Vector{Int})
