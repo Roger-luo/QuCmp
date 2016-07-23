@@ -40,3 +40,7 @@ function addgate!{T,N,M}(circuit::QuCircuit{N},gate::Gate{T,M},pos::Int...)
     push!(circuit.gates,GateUnit(gate,ntuple(x->sort(collect(pos))[x],length(pos))...))
     sort!(circuit.gates,alg=QuickSort,by=x->x.pos[1])
 end
+
+function addgate!{T,N,M}(circuit::QuCircuit{N},gate::Gate{T,M},pos::Int...)
+
+function rmgate!{T,N,M}(circuit::QuCircuit{N},gate::Gate{T,M},pos::Int...)
