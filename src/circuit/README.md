@@ -62,7 +62,8 @@ If you want to create your own gate and its related simulation algorithm, the fo
 
 - Quantum circuits and adiabatic computation
   - [ ] `addgate!`, `removegate!`
-  - [ ] pHamiltonian
+  - [x] pHamiltonian
+  - [ ] merge GPU acceleration from AdiaComput.jl
 
 - Visualization
   - [ ] `plot` (circuit)
