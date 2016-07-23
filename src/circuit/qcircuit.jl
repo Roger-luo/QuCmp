@@ -32,29 +32,28 @@ stlzCircuit(num::Integer) = StableCircuit{num}(Array(GateUnit,0))
 
 max(a::Int) = a
 
+# NOTE
+# Should we open AbstractGateUnit as API for users?
+
 function addgate!{N,M}(circuit::QuCircuit{N},gate::AbstractGateUnit{M})
-  addgate!(circuit,gate)
-end
-
-function addgate!{T,N,M}(circuit::QuCircuit{N},gate::GateUnit{T,M})
-  push!(circuit.gates,gate)
-  sort!(circuit.gates,alg=QuickSort,by=x->x.pos[1])
-end
-
-function addgate!{T,N,M}(circuit::QuCircuit,gate::CtrlGateUnit{T,N})
   push!(circuit.gates,gate)
   sort!(circuit,gates,alg=QuickSort,by=x->x.pos[1])
 end
 
+# For gate units
 function addgate!{T,N,M}(circuit::QuCircuit{N},gate::Gate{T,M},pos::Vector{Int})
     # Bounds check
     @assert length(pos)==M+1 "number of qubits do not match"
-    @assert max(pos[2:end]...)<=N
+    @assert max(maximum(pos[2:end]),maximum(ctrl)) <= N "bit's id out of range, maximum is $N"
 
-    push!(circuit.gates,GateUnit(gate,ntuple(x->sort(collect(pos))[x],length(pos))...))
-    sort!(circuit.gates,alg=QuickSort,by=x->x.pos[1])
+    addgate!(circuit.gates,GateUnit(gate,sort(pos)))
 end
 
-function addgate!{T,N,M}(circuit::QuCircuit{N},gate::Gate{T,M},pos::Int...)
+addgate!{T,N,M}(circuit::QuCircuit{N},gate::Gate{T,M},pos::Int...) = addgate!(circuit,gate,collect(pos))
+
+function addgate!{T,N,M}(circuit::QuCircuit{N},gate::Gate{T,M},pos::Vector{Int},ctrl::Vector{Int})
+    # Bounds check
+    @assert length(pos)+length(ctrl) == M+1
+    @assert max()
 
 function rmgate!{T,N,M}(circuit::QuCircuit{N},gate::Gate{T,M},pos::Int...)
