@@ -54,13 +54,19 @@ function process{N}(unit::AbstractGateUnit{N},input::AbstractSparseArray)
     return ret
 end
 
+#################################
+# Stablizer circuits processing
+#################################
+
+# the Stablizer circuit implemented algorithms in http://www.scottaaronson.com/chp/
+
 # TODO
 # function process{N}(unit::CtrlGateUnit{N},input::AbstractSparseArray)
 # end
 
-# TODO
-# function process(unit::HadamardUnit,input::AbstractSparseArray)
-# end
+function process(unit::HadamardUnit,input::AbstractSparseArray)
+  unit.pos
+end
 
 # TODO
 # function process(unit::CNOTUnit,input::AbstractSparseArray)

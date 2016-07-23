@@ -21,4 +21,7 @@ end
 (^)(A::QuState,b::Real) = A.s^b
 
 
-# TODO show(io::IO,state::QuState)
+# TODO
+# show(io::IO,state::AbstractQuArray)
+# show(io::IO,state::QuState)
+# show(io::IO,state::QuIDDArray)
