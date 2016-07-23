@@ -32,7 +32,21 @@ stlzCircuit(num::Integer) = StableCircuit{num}(Array(GateUnit,0))
 
 max(a::Int) = a
 
-function addgate!{T,N,M}(circuit::QuCircuit{N},gate::Gate{T,M},pos::Int...)
+function addgate!{N,M}(circuit::QuCircuit{N},gate::AbstractGateUnit{M})
+  addgate!(circuit,gate)
+end
+
+function addgate!{T,N,M}(circuit::QuCircuit{N},gate::GateUnit{T,M})
+  push!(circuit.gates,gate)
+  sort!(circuit.gates,alg=QuickSort,by=x->x.pos[1])
+end
+
+function addgate!{T,N,M}(circuit::QuCircuit,gate::CtrlGateUnit{T,N})
+  push!(circuit.gates,gate)
+  sort!(circuit,gates,alg=QuickSort,by=x->x.pos[1])
+end
+
+function addgate!{T,N,M}(circuit::QuCircuit{N},gate::Gate{T,M},pos::Vector{Int})
     # Bounds check
     @assert length(pos)==M+1 "number of qubits do not match"
     @assert max(pos[2:end]...)<=N

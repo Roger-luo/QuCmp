@@ -19,6 +19,14 @@ function call{T,N}(gate::Gate{T,N})
     return gate.op()
 end
 
+
+"""
+An AbstractGateUnit should at least contain one element called `pos`,
+for definition of `pos`, please refer to the docs of `GateUnit`
+"""
+abstract AbstractGateUnit{N}
+
+
 """
 GateUnit
 ---
@@ -42,7 +50,6 @@ eg.
 
 The position of gate B is (2,4,5,6)
 """
-abstract AbstractGateUnit{N}
 
 type GateUnit{T,N}<:AbstractGateUnit{N}
     gate::Gate{T,N}
