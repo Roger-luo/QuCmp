@@ -38,7 +38,7 @@ function set(x::Integer,pad::Int,ids::Vector{Int},assign::Integer)
     return ret
 end
 
-function process{N}(unit::AbstractGateUnit{N},input::AbstractSparseArray)
+function process!{N}(unit::AbstractGateUnit{N},input::AbstractSparseArray)
     len = length(unit.pos)-1
     eigens = unit.gate()
     ret = spzeros(Complex,size(input)...)
@@ -51,41 +51,20 @@ function process{N}(unit::AbstractGateUnit{N},input::AbstractSparseArray)
         end
         ret += rett
     end
+    input[:] = ret
     return ret
 end
 
-#################################
-# Stablizer circuits processing
-#################################
-
-# the Stablizer circuit implemented algorithms in http://www.scottaaronson.com/chp/
-
-# TODO
-# function process{N}(unit::CtrlGateUnit{N},input::AbstractSparseArray)
-# end
-
-function process(unit::HadamardUnit,input::AbstractSparseArray)
-  unit.pos
-end
-
-# TODO
-# function process(unit::CNOTUnit,input::AbstractSparseArray)
-# end
-
-# TODO
-# function process(unit::PhaseUnit,input::AbstractSparseArray)
-# end
-
-function process{N}(circuit::Circuit{N},input::AbstractSparseArray)
+function process!{N}(circuit::Circuit{N},input::AbstractSparseArray)
     ret = deepcopy(input)
     for unit in circuit.gates
         if N==bitnum(unit)
             ret = unit.gate(ret)
         else
-            ret = process(unit,ret)
+            ret = process!(unit,ret)
         end
     end
     return ret
 end
 
-export process
+export process!

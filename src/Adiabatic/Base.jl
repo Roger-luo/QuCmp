@@ -30,7 +30,7 @@ type AdiaComputer <: QuComput
     # n is the number of bits
     # maxtime is the max evolution time
 
-    function AdiaComputer{M,N}(pH::AbstractMatrix,n::Int,maxtime::Real;dt=1e-2,nev=6)
+    function AdiaComputer(pH::AbstractMatrix,n::Int,maxtime::Real;dt=1e-2,nev=6)
         HP = pH
         HB = bHamilton(n)
 

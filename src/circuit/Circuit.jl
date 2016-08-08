@@ -1,6 +1,6 @@
 using Expokit
 import Base: show,bin
-export Gate,Hadamard,X,Y,Z,Circuit,addgate!
+export Gate,Hadamard,X,Y,Z,Circuit,addgate!,HadamardUnit
 
 abstract QuCircuit{N}<:AbstractModels{N}
 
@@ -9,3 +9,4 @@ include("op.jl")
 include("gates.jl")
 include("qcircuit.jl")
 include("process.jl")
+include("chp.jl")
