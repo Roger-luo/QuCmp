@@ -1,5 +1,7 @@
 module QuCmp
 
+using QuBase
+
 abstract QuComput
 abstract AbstractModels{N}
 
