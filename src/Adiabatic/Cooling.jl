@@ -29,11 +29,11 @@ function daemon!(
     if dice <= 0.5*(1+sin(gamma))
         #get |1> (higher energy)
         heater!(Hs,gamma,t)
-        return 0.5*(1-sin(gamma))
+        return 0.5*(1+sin(gamma))
     else
         #get |0> (lower energy)
         cooler!(Hs,gamma,t)
-        return 0.5*(1+sin(gamma))
+        return 0.5*(1-sin(gamma))
     end
 end
 
