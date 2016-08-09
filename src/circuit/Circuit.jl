@@ -2,7 +2,7 @@ using Expokit
 import Base: show,bin
 export Gate,Hadamard,X,Y,Z,Circuit,addgate!,HadamardUnit
 
-abstract QuCircuit{N}<:AbstractModels{N}
+abstract QuCircuit{N}<:AbstractQC{N}
 
 include("state.jl")
 include("op.jl")

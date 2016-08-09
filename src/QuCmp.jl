@@ -1,9 +1,13 @@
 module QuCmp
 
-using QuBase
+using QuBase,QuDynamics
 
-abstract QuComput
-abstract AbstractModels{N}
+export ComputBasis
+
+abstract AbstractQC{N}
+
+ComputBasis(n::Int) = FiniteBasis(ntuple(x->2,n))
+
 
 include("const.jl")
 include("utils/LogicExpr.jl")

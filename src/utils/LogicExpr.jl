@@ -7,18 +7,28 @@
 ###################################################################
 
 
+import Base: show,call
+export AbstractBits, AbstractClause, Bits,
+        Clause, ECClause, TruthTable, save,
+        generate, Instance, AssignNum, readins
+
 
 abstract AbstractBits
 abstract AbstractClause{N}
 
 immutable Bits <: AbstractBits
     value::UInt32
+
+    Bits(n::Integer) = new(n)
 end
 
 function call(b::Bits,n::Integer)
     @assert n>0
     return (b.value>>(n-1))&1
 end
+
+# function convert(Bits,Integer)
+#     return Bits()
 
 """
 TruthTable Example:
@@ -92,10 +102,10 @@ function call{N}(c::ECClause{N},assign::Integer)
 end
 
 function save{N}(io::IO,clause::ECClause{N})
-    write(io,clause.ids[1])
+    write(io,"$(clause.ids[1])")
     for id in clause.ids[2:end]
         write(io,"\t")
-        write(io,id)
+        write(io,"$(id)")
     end
     write(io,"\n")
 end
@@ -152,15 +162,23 @@ function save{M,N}(io::IO,ins::Instance{M,N})
     end
 end
 
+function readins(io::IO)
+    data = convert(Array{Int,2},readdlm(io))
+    clauses = ECClause[ECClause(vec(data[i,:])) for i=1:size(data)[1]]
+    @show typeof(clauses[1])
+    return Instance(size(data)[2],clauses)
+end
 
 function AssignNum{M,N}(instance::Instance{M,N})
     count = 0
+    ans = Int[]
     for i = 0:2^M-1
         if instance(Bits(i)) == 1
             count+=1
+            push!(ans,i)
         end
     end
-    return count
+    return count,ans
 end
 
 import Base: push!
@@ -175,7 +193,7 @@ end
 #
 ################################################################################
 
-function engine(n::Integer,N::Integer,maxtry=1000)
+function engine(n::Integer,N::Integer,maxtry=100)
     list = collect(1:n)
     ids = (list|>shuffle)[1:N]
 
@@ -189,8 +207,9 @@ function engine(n::Integer,N::Integer,maxtry=1000)
             push!(ins,ECClause(ids))
         end
 
-        if AssignNum(ins)<2
-            return ins
+        asign = AssignNum(ins)
+        if asign[1]==1
+            return ins,asign[2]
         end
     end
 
@@ -203,6 +222,5 @@ function generate(n::Integer,maxiter=1000;maxbits=16,N=3)
         t === nothing || return t
     end
     warn("may not have an assignment\n")
+    return nothing,nothing
 end
-
-export AbstractBits,AbstractClause,Bits,Clause,ECClause,TruthTable,save,show,generate,call,Instance
